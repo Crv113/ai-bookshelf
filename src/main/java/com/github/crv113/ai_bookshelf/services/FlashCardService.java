@@ -1,8 +1,11 @@
 package com.github.crv113.ai_bookshelf.services;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.github.crv113.ai_bookshelf.dtos.FlashCardCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardResponseDTO;
@@ -30,6 +33,13 @@ public class FlashCardService {
     public List<FlashCardResponseDTO> findAll() {
         return flashCardRepository.findAll().stream().map(this::toResponseDTO)
                 .toList();
+    }
+
+    public FlashCardResponseDTO findById(UUID id) {
+        FlashCard flashCard = flashCardRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return toResponseDTO(flashCard);
     }
 
     private FlashCardResponseDTO toResponseDTO(FlashCard flashCard) {

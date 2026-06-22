@@ -11,12 +11,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,6 +35,11 @@ public class FlashCardController {
     @GetMapping()
     public List<FlashCardResponseDTO> get() {
         return flashCardService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public FlashCardResponseDTO getById(@PathVariable UUID id) {
+        return flashCardService.findById(id);
     }
 
 }
