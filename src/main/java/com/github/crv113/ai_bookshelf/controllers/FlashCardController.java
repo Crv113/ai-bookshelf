@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.crv113.ai_bookshelf.dtos.FlashCardCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardResponseDTO;
+import com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO;
 import com.github.crv113.ai_bookshelf.services.FlashCardService;
 
 import jakarta.validation.Valid;
@@ -17,8 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,13 +36,25 @@ public class FlashCardController {
     }
 
     @GetMapping()
-    public List<FlashCardResponseDTO> get() {
+    public List<FlashCardSummaryDTO> get() {
         return flashCardService.findAll();
     }
 
     @GetMapping("/{id}")
     public FlashCardResponseDTO getById(@PathVariable UUID id) {
         return flashCardService.findById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        flashCardService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public FlashCardResponseDTO update(@PathVariable UUID id,
+            @Valid @RequestBody FlashCardCreateDTO flashCardCreateDTO) {
+        return flashCardService.update(flashCardCreateDTO, id);
     }
 
 }

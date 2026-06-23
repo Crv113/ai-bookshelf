@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.github.crv113.ai_bookshelf.dtos.FlashCardCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardResponseDTO;
+import com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO;
 import com.github.crv113.ai_bookshelf.entities.FlashCard;
 import com.github.crv113.ai_bookshelf.repositories.FlashCardRepository;
 
@@ -30,14 +31,31 @@ public class FlashCardService {
         return toResponseDTO(flashCard);
     }
 
-    public List<FlashCardResponseDTO> findAll() {
-        return flashCardRepository.findAll().stream().map(this::toResponseDTO)
-                .toList();
+    public List<FlashCardSummaryDTO> findAll() {
+        return flashCardRepository.findAllSummaries();
     }
 
     public FlashCardResponseDTO findById(UUID id) {
         FlashCard flashCard = flashCardRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return toResponseDTO(flashCard);
+    }
+
+    public void delete(UUID id) {
+        FlashCard flashCard = flashCardRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        flashCardRepository.delete(flashCard);
+    }
+
+    public FlashCardResponseDTO update(FlashCardCreateDTO flashCardCreateDTO, UUID id) {
+        FlashCard flashCard = flashCardRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        flashCard.setTitle(flashCardCreateDTO.getTitle());
+        flashCard.setSummary(flashCardCreateDTO.getSummary());
+        flashCard.setContent(flashCardCreateDTO.getContent());
+        flashCardRepository.save(flashCard);
 
         return toResponseDTO(flashCard);
     }
