@@ -41,9 +41,7 @@ function EmptyState({ onImport }: { onImport: () => void }) {
         </p>
         <button
           onClick={onImport}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors bg-brand text-on-brand"
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
+          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors bg-brand text-on-brand hover:bg-brand-hover hover:cursor-pointer"
         >
           <UploadIcon />
           Importer mon premier JSON
@@ -75,9 +73,7 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
         {!isEmpty && (
           <button
             onClick={onImport}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors shrink-0 mt-2 bg-brand text-on-brand"
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors shrink-0 mt-2 bg-brand text-on-brand hover:bg-brand-hover hover:cursor-pointer"
           >
             <UploadIcon />
             Importer un JSON
@@ -93,7 +89,7 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
 
       {isError && (
         <div className="flex justify-center py-20 text-red-500 text-sm">
-          Impossible de charger les flashcards. L'API est-elle démarrée ?
+          Impossible de charger les flashcards.
         </div>
       )}
 
@@ -105,9 +101,7 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
             <li key={card.id}>
               <Link
                 to={`/flashcards/${card.id}`}
-                className="group block rounded-xl p-5 transition-all bg-card"
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.85)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-card)' }}
+                className="group block rounded-xl p-5 transition-all bg-card hover:bg-card-hover"
               >
                 <h3 className="font-display font-semibold text-stone-900 mb-1 transition-colors group-hover:text-brand">
                   {card.title}

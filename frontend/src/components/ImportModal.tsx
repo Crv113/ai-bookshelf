@@ -64,7 +64,7 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
         <div className="mb-5">
           <h2 className="font-display text-xl font-semibold text-stone-900">Importer une flashcard</h2>
           <p className="text-sm text-stone-500 mt-1 leading-relaxed">
-            Collez votre JSON ci-dessous. Il sera envoyé directement au backend.
+            Collez votre JSON ci-dessous pour créer une fiche de révision.
           </p>
         </div>
 
@@ -98,9 +98,7 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
             <button
               type="submit"
               disabled={mutation.isPending || !json.trim()}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-brand text-on-brand"
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
+              className="flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-brand text-on-brand hover:bg-brand-hover"
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>

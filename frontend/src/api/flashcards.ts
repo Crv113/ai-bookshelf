@@ -14,6 +14,11 @@ export async function fetchFlashCard(id: string): Promise<FlashCardResponse> {
   return res.json()
 }
 
+export async function deleteFlashCard(id: string): Promise<void> {
+  const res = await fetch(`${BASE}/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`Erreur ${res.status} lors de la suppression`)
+}
+
 export async function createFlashCard(payload: FlashCardCreatePayload): Promise<FlashCardResponse> {
   const res = await fetch(BASE, {
     method: 'POST',

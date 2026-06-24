@@ -57,13 +57,7 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
         <Link
           to="/"
           onClick={onMobileClose}
-          className="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors"
-          style={{
-            backgroundColor: isHome ? 'rgba(255,255,255,0.08)' : 'transparent',
-            color: isHome ? 'var(--color-sidebar-active)' : 'var(--color-muted)',
-          }}
-          onMouseEnter={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)' }}
-          onMouseLeave={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = isHome ? 'rgba(255,255,255,0.08)' : 'transparent' }}
+          className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${isHome ? 'bg-[rgba(255,255,255,0.08)] text-sidebar-active' : 'text-muted hover:bg-[rgba(255,255,255,0.04)]'}`}
         >
           <div className="flex items-center gap-2.5">
             <CardIcon active={isHome} />
@@ -78,9 +72,7 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
 
         <button
           onClick={onImport}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-colors text-muted"
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--color-muted-hover)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-muted)' }}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-colors text-muted hover:bg-[rgba(255,255,255,0.04)] hover:text-muted-hover hover:cursor-pointer"
         >
           <UploadIcon />
           <span>Importer un JSON</span>

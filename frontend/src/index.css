@@ -17,6 +17,7 @@
   --color-sidebar:        oklch(28% .04 30); /* brun presque noir — fond sidebar */
   --color-sidebar-active: #E8DDD0; /* crème grisé — texte item actif sidebar */
   --color-card:           rgba(255,255,255,0.55); /* blanc semi-transparent — fond des cartes liste */
+  --color-card-hover:     rgba(255,255,255,0.85); /* blanc plus opaque — hover des cartes liste */
   --color-white-subtle:   rgba(255,255,255,0.06); /* blanc très transparent — séparateurs sidebar */
 }
 
