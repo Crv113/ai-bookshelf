@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { fetchFlashCards } from '../api/flashcards'
+import { UploadIcon } from '../components/icons/icons'
 
 interface FlashCardListPageProps {
   onImport: () => void
@@ -8,14 +9,6 @@ interface FlashCardListPageProps {
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })
-}
-
-function UploadIcon() {
-  return (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
-    </svg>
-  )
 }
 
 function BookIcon() {
