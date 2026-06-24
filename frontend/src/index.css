@@ -3,11 +3,26 @@
 
 @theme {
   --font-display: "Playfair Display", Georgia, serif;
+
+  --color-brand:          #5C1B1B; /* rouge bordeaux — boutons principaux */
+  --color-brand-hover:    #7A2828; /* bordeaux éclairci — hover des boutons */
+  --color-accent:         #C4742A; /* orange brun — logo, icônes d'accentuation */
+  --color-page:           #F0EBE0; /* beige clair — fond de page */
+  --color-surface:        #FAF7F2; /* blanc cassé — fond modal, cartes */
+  --color-on-brand:       #F5EDE8; /* crème — texte sur fond brand */
+  --color-warm:           #E8D5B4; /* sable — fonds secondaires chauds */
+  --color-ink:            #3B2A1A; /* brun très foncé — texte principal */
+  --color-muted:          #6B5540; /* brun moyen — texte discret sidebar */
+  --color-muted-hover:    #9E8870; /* brun clair — hover texte discret */
+  --color-sidebar:        oklch(28% .04 30); /* brun presque noir — fond sidebar */
+  --color-sidebar-active: #E8DDD0; /* crème grisé — texte item actif sidebar */
+  --color-card:           rgba(255,255,255,0.55); /* blanc semi-transparent — fond des cartes liste */
+  --color-white-subtle:   rgba(255,255,255,0.06); /* blanc très transparent — séparateurs sidebar */
 }
 
 @layer base {
   body {
-    background-color: #F0EBE0;
+    background-color: var(--color-page);
     @apply text-stone-900 antialiased;
     font-family: 'Inter', system-ui, sans-serif;
   }

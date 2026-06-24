@@ -23,12 +23,11 @@ function EmptyState({ onImport }: { onImport: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
       <div
-        className="rounded-2xl px-12 py-10 flex flex-col items-center text-center max-w-md w-full"
-        style={{ backgroundColor: 'rgba(255,255,255,0.55)', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+        className="rounded-2xl px-12 py-10 flex flex-col items-center text-center max-w-md w-full bg-card"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
       >
         <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-5"
-          style={{ backgroundColor: '#E8D5B4' }}
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-warm"
         >
           <BookIcon />
         </div>
@@ -42,10 +41,9 @@ function EmptyState({ onImport }: { onImport: () => void }) {
         </p>
         <button
           onClick={onImport}
-          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors"
-          style={{ backgroundColor: '#5C1B1B', color: '#F5EDE8' }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#7A2828' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5C1B1B' }}
+          className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors bg-brand text-on-brand"
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
         >
           <UploadIcon />
           Importer mon premier JSON
@@ -77,10 +75,9 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
         {!isEmpty && (
           <button
             onClick={onImport}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors shrink-0 mt-2"
-            style={{ backgroundColor: '#5C1B1B', color: '#F5EDE8' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#7A2828' }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#5C1B1B' }}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors shrink-0 mt-2 bg-brand text-on-brand"
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
           >
             <UploadIcon />
             Importer un JSON
@@ -108,12 +105,11 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
             <li key={card.id}>
               <Link
                 to={`/flashcards/${card.id}`}
-                className="group block rounded-xl p-5 transition-all"
-                style={{ backgroundColor: 'rgba(255,255,255,0.55)' }}
+                className="group block rounded-xl p-5 transition-all bg-card"
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.85)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.55)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-card)' }}
               >
-                <h3 className="font-display font-semibold text-stone-900 mb-1 transition-colors group-hover:text-[#5C1B1B]">
+                <h3 className="font-display font-semibold text-stone-900 mb-1 transition-colors group-hover:text-brand">
                   {card.title}
                 </h3>
                 <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{card.summary}</p>

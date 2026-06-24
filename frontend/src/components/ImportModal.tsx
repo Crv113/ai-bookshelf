@@ -59,8 +59,7 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
         onClick={handleClose}
       />
       <div
-        className="relative rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-7"
-        style={{ backgroundColor: '#FAF7F2' }}
+        className="relative rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-7 bg-surface"
       >
         <div className="mb-5">
           <h2 className="font-display text-xl font-semibold text-stone-900">Importer une flashcard</h2>
@@ -77,8 +76,7 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
             spellCheck={false}
             autoFocus
             className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-xs font-mono text-stone-800 placeholder-stone-300 resize-none focus:outline-none focus:ring-2 focus:border-transparent"
-            style={{ focusRingColor: '#5C1B1B' } as React.CSSProperties}
-            onFocus={(e) => { e.target.style.borderColor = '#5C1B1B'; e.target.style.boxShadow = '0 0 0 2px rgba(92,27,27,0.15)' }}
+            onFocus={(e) => { e.target.style.borderColor = 'var(--color-brand)'; e.target.style.boxShadow = '0 0 0 2px rgba(92,27,27,0.15)' }}
             onBlur={(e) => { e.target.style.borderColor = ''; e.target.style.boxShadow = '' }}
             placeholder={'{\n  "title": "...",\n  "summary": "...",\n  "content": "# Titre\\n\\nContenu..."\n}'}
           />
@@ -100,10 +98,9 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
             <button
               type="submit"
               disabled={mutation.isPending || !json.trim()}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-              style={{ backgroundColor: '#5C1B1B', color: '#F5EDE8' }}
-              onMouseEnter={(e) => { (e.currentTarget.style.backgroundColor = '#7A2828') }}
-              onMouseLeave={(e) => { (e.currentTarget.style.backgroundColor = '#5C1B1B') }}
+              className="flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 bg-brand text-on-brand"
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand-hover)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-brand)' }}
             >
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>

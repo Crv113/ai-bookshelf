@@ -28,7 +28,7 @@ export default function FlashCardDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center h-64 gap-3">
         <p className="text-sm text-red-500">Flashcard introuvable.</p>
-        <Link to="/" className="text-sm hover:underline" style={{ color: '#5C1B1B' }}>
+        <Link to="/" className="text-sm hover:underline text-brand">
           ← Retour à la liste
         </Link>
       </div>
@@ -65,8 +65,7 @@ export default function FlashCardDetailPage() {
       <hr className="border-stone-200/70 mb-8 max-w-2xl" />
 
       <div
-        className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-2xl overflow-hidden -mx-4 lg:mx-0"
-        style={{ backgroundColor: 'rgba(255,255,255,0.55)' }}
+        className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-2xl overflow-hidden -mx-4 lg:mx-0 bg-card"
       >
         <MarkdownRenderer content={card.content} />
       </div>

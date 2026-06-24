@@ -52,7 +52,7 @@ export default function MermaidDiagram({ chart }: MermaidDiagramProps) {
       })
       .catch(() => {
         if (ref.current) {
-          ref.current.innerHTML = `<pre style="font-size:12px;color:#6B5540">${chart}</pre>`
+          ref.current.innerHTML = `<pre style="font-size:12px;color:var(--color-muted)">${chart}</pre>`
         }
       })
   }, [chart, id])
@@ -60,8 +60,7 @@ export default function MermaidDiagram({ chart }: MermaidDiagramProps) {
   return (
     <div
       ref={ref}
-      className="my-6 flex justify-center overflow-x-auto rounded-xl py-4"
-      style={{ backgroundColor: '#FAF7F2' }}
+      className="my-6 flex justify-center overflow-x-auto rounded-xl py-4 bg-surface"
     />
   )
 }

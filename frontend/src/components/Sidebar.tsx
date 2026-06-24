@@ -20,9 +20,8 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
 
   return (
     <aside
-      className="fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 shrink-0"
+      className="fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 shrink-0 bg-sidebar"
       style={{
-        backgroundColor: 'oklch(28% .04 30)',
         width: '208px',
         transform: mobileOpen ? 'translateX(0)' : undefined,
       }}
@@ -35,20 +34,19 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
         }
       `}</style>
 
-      <div className="px-4 pt-6 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="px-4 pt-6 pb-5 border-b border-white-subtle">
         <div className="flex items-center justify-between">
           <Link to="/" onClick={onMobileClose} className="flex items-center gap-2.5">
             <LibraryIcon />
             <div>
-              <div className="text-sm font-semibold leading-none" style={{ color: '#C4742A', letterSpacing: '-0.01em' }}>
+              <div className="text-sm font-semibold leading-none text-accent" style={{ letterSpacing: '-0.01em' }}>
                 ai-bookshelf
               </div>
             </div>
           </Link>
           <button
             onClick={onMobileClose}
-            className="lg:hidden p-1 rounded"
-            style={{ color: '#6B5540' }}
+            className="lg:hidden p-1 rounded text-muted"
           >
             <CloseIcon />
           </button>
@@ -62,7 +60,7 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
           className="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors"
           style={{
             backgroundColor: isHome ? 'rgba(255,255,255,0.08)' : 'transparent',
-            color: isHome ? '#E8DDD0' : '#6B5540',
+            color: isHome ? 'var(--color-sidebar-active)' : 'var(--color-muted)',
           }}
           onMouseEnter={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)' }}
           onMouseLeave={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = isHome ? 'rgba(255,255,255,0.08)' : 'transparent' }}
@@ -72,8 +70,7 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
             <span>Toutes les fiches</span>
           </div>
           <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-            style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: '#6B5540' }}
+            className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-white-subtle text-muted"
           >
             {flashCards.length}
           </span>
@@ -81,10 +78,9 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
 
         <button
           onClick={onImport}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-colors"
-          style={{ color: '#6B5540' }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#9E8870' }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#6B5540' }}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-colors text-muted"
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = 'var(--color-muted-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-muted)' }}
         >
           <UploadIcon />
           <span>Importer un JSON</span>

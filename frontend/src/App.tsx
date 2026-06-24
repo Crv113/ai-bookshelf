@@ -20,11 +20,10 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#F0EBE0' }}>
+    <div className="flex min-h-screen bg-page">
       {/* Mobile top bar */}
       <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center justify-between px-4"
-        style={{ backgroundColor: 'oklch(28% .04 30)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center justify-between px-4 border-b border-white-subtle bg-sidebar"
       >
         <button
           onClick={() => setSidebarOpen(true)}
@@ -33,7 +32,7 @@ export default function App() {
         >
           <PanelLeftIcon />
         </button>
-        <Link to="/" className="flex items-center gap-2" style={{ color: '#C4742A' }}>
+        <Link to="/" className="flex items-center gap-2 text-accent">
           <LibraryIcon />
           <span className="text-sm font-semibold" style={{ letterSpacing: '-0.01em' }}>ai-bookshelf</span>
         </Link>
@@ -55,7 +54,7 @@ export default function App() {
         onMobileClose={() => setSidebarOpen(false)}
       />
 
-      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0" style={{ backgroundColor: '#F0EBE0' }}>
+      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0 bg-page">
         <Routes>
           <Route path="/" element={<FlashCardListPage onImport={() => setImportOpen(true)} />} />
           <Route path="/flashcards/:id" element={<FlashCardDetailPage />} />
