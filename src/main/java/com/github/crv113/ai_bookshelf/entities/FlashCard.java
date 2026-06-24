@@ -33,6 +33,7 @@ public class FlashCard {
     @NotBlank
     private String title;
     @NotBlank
+    @Column(columnDefinition = "TEXT")
     private String summary;
 
     @NotBlank

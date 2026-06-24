@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+}
+
+@layer base {
+  body {
+    background-color: #F0EBE0;
+    @apply text-stone-900 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
