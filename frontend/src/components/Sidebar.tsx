@@ -5,6 +5,8 @@ import { fetchFlashCards } from '../api/flashcards'
 
 interface SidebarProps {
   onImport: () => void
+  mobileOpen: boolean
+  onMobileClose: () => void
 }
 
 function LibraryIcon() {
@@ -26,15 +28,15 @@ function CardIcon({ active }: { active: boolean }) {
   )
 }
 
-function UploadIcon({ active }: { active: boolean }) {
+function UploadIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill={active ? '#E8DDD0' : '#6B5540'}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="#6B5540">
       <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
     </svg>
   )
 }
 
-export default function Sidebar({ onImport }: SidebarProps) {
+export default function Sidebar({ onImport, mobileOpen, onMobileClose }: SidebarProps) {
   const location = useLocation()
   const { data: flashCards = [] } = useQuery({
     queryKey: ['flashcards'],
@@ -45,33 +47,57 @@ export default function Sidebar({ onImport }: SidebarProps) {
 
   return (
     <aside
-      className="w-52 shrink-0 flex flex-col h-screen sticky top-0"
-      style={{ backgroundColor: 'oklch(28% .04 30)' }}
+      className="fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 shrink-0"
+      style={{
+        backgroundColor: 'oklch(28% .04 30)',
+        width: '208px',
+        transform: mobileOpen ? 'translateX(0)' : undefined,
+      }}
+      data-mobile-open={mobileOpen}
     >
+      <style>{`
+        @media (max-width: 1023px) {
+          aside[data-mobile-open="false"] { transform: translateX(-100%); }
+          aside[data-mobile-open="true"]  { transform: translateX(0); }
+        }
+      `}</style>
+
       <div className="px-4 pt-6 pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <Link to="/" className="flex items-center gap-2.5">
-          <LibraryIcon />
-          <div>
-            <div className="text-sm font-semibold leading-none" style={{ color: '#E8DDD0', letterSpacing: '-0.01em' }}>
-              ai-bookshelf
+        <div className="flex items-center justify-between">
+          <Link to="/" onClick={onMobileClose} className="flex items-center gap-2.5">
+            <LibraryIcon />
+            <div>
+              <div className="text-sm font-semibold leading-none" style={{ color: '#C4742A', letterSpacing: '-0.01em' }}>
+                ai-bookshelf
+              </div>
+              <div className="text-[9px] uppercase tracking-widest mt-1" style={{ color: '#4A3525' }}>
+                Your Study Library
+              </div>
             </div>
-            <div className="text-[9px] uppercase tracking-widest mt-1" style={{ color: '#4A3525' }}>
-              Your Study Library
-            </div>
-          </div>
-        </Link>
+          </Link>
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden p-1 rounded"
+            style={{ color: '#6B5540' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <nav className="flex-1 px-2 py-3 space-y-0.5">
         <Link
           to="/"
+          onClick={onMobileClose}
           className="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors"
           style={{
             backgroundColor: isHome ? 'rgba(255,255,255,0.08)' : 'transparent',
             color: isHome ? '#E8DDD0' : '#6B5540',
           }}
           onMouseEnter={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)' }}
-          onMouseLeave={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = 'transparent' }}
+          onMouseLeave={(e) => { if (!isHome) e.currentTarget.style.backgroundColor = isHome ? 'rgba(255,255,255,0.08)' : 'transparent' }}
         >
           <div className="flex items-center gap-2.5">
             <CardIcon active={isHome} />
@@ -92,7 +118,7 @@ export default function Sidebar({ onImport }: SidebarProps) {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.color = '#9E8870' }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#6B5540' }}
         >
-          <UploadIcon active={false} />
+          <UploadIcon />
           <span>Importer un JSON</span>
         </button>
       </nav>

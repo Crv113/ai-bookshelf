@@ -36,7 +36,7 @@ export default function FlashCardDetailPage() {
   }
 
   return (
-    <div className="px-12 py-10">
+    <div className="px-4 py-6 lg:px-12 lg:py-10 max-w-3xl mx-auto">
       <Link
         to="/"
         className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors mb-8"
@@ -65,7 +65,7 @@ export default function FlashCardDetailPage() {
       <hr className="border-stone-200/70 mb-8 max-w-2xl" />
 
       <div
-        className="rounded-2xl p-8 max-w-2xl"
+        className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-2xl overflow-hidden -mx-4 lg:mx-0"
         style={{ backgroundColor: 'rgba(255,255,255,0.55)' }}
       >
         <MarkdownRenderer content={card.content} />

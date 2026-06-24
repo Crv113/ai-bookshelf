@@ -71,7 +71,7 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
   const isEmpty = !isLoading && !isError && flashCards.length === 0
 
   return (
-    <div className="min-h-full px-12 py-10">
+    <div className="min-h-full px-4 py-6 lg:px-12 lg:py-10 max-w-4xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">
