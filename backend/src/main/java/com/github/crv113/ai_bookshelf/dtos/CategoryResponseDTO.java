@@ -6,15 +6,11 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-public class FlashCardResponseDTO {
+@Getter
+public class CategoryResponseDTO {
 
     private UUID id;
-    private String title;
+    private String name;
     private LocalDateTime createdAt;
-    private String summary;
-    private String content;
-    private UUID categoryId;
-    private String categoryName;
 }

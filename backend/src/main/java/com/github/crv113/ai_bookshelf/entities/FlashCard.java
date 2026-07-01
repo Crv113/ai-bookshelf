@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,4 +40,7 @@ public class FlashCard {
     @NotBlank
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @ManyToOne
+    private Category category;
 }

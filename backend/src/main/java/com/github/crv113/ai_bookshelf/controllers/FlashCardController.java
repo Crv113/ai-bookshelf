@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardResponseDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO;
+import com.github.crv113.ai_bookshelf.dtos.FlashCardUpdateDTO;
 import com.github.crv113.ai_bookshelf.services.FlashCardService;
 
 import jakarta.validation.Valid;
@@ -53,8 +54,8 @@ public class FlashCardController {
 
     @PutMapping("/{id}")
     public FlashCardResponseDTO update(@PathVariable UUID id,
-            @Valid @RequestBody FlashCardCreateDTO flashCardCreateDTO) {
-        return flashCardService.update(flashCardCreateDTO, id);
+            @Valid @RequestBody FlashCardUpdateDTO flashCardUpdateDTO) {
+        return flashCardService.update(flashCardUpdateDTO, id);
     }
 
 }
