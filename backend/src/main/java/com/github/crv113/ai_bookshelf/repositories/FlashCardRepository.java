@@ -13,4 +13,6 @@ public interface FlashCardRepository extends JpaRepository<FlashCard, UUID> {
 
     @Query("SELECT new com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO(f.id, f.title, f.createdAt,f.summary) FROM FlashCard f")
     public List<FlashCardSummaryDTO> findAllSummaries();
+
+    public boolean existsByCategoryId(UUID categoryId);
 }
