@@ -11,10 +11,13 @@ export interface FlashCardResponse {
   createdAt: string
   summary: string
   content: string
+  categoryId: string
+
 }
 
 export interface FlashCardCreatePayload {
   title: string
   summary: string
   content: string
+  categoryId: string
 }

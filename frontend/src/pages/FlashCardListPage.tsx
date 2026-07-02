@@ -35,9 +35,9 @@ function EmptyState({ onImport }: { onImport: () => void }) {
           Commencez par importer une conversation
         </h3>
         <p className="text-sm text-stone-500 leading-relaxed mb-6">
-          Collez ou déposez un JSON exporté depuis ChatGPT ou Claude.
+          Importez un JSON exporté depuis ChatGPT ou Claude grâce au prompt fourni.
           <br />
-          Chaque résumé deviendra une fiche de révision élégante, classée par catégorie.
+          Chaque résumé deviendra une fiche de révision élégante, que vous pourrez classer par catégorie.
         </p>
         <button
           onClick={onImport}
