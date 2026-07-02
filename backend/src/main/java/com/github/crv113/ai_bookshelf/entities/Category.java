@@ -36,10 +36,4 @@ public class Category {
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    private Category parent;
-
-    @OneToMany(mappedBy = "parent")
-    private List<Category> children;
 }

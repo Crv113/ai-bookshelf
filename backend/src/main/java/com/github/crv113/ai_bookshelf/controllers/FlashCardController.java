@@ -46,6 +46,11 @@ public class FlashCardController {
         return flashCardService.findById(id);
     }
 
+    @GetMapping("/category/{categoryId}")
+    public List<FlashCardSummaryDTO> getByCategoryId(@PathVariable UUID categoryId) {
+        return flashCardService.findByCategoryId(categoryId);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         flashCardService.delete(id);

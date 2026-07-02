@@ -13,6 +13,4 @@ public class CategoryResponseDTO {
     private UUID id;
     private String name;
     private LocalDateTime createdAt;
-    private UUID parentId;
-    private String parentName;
 }

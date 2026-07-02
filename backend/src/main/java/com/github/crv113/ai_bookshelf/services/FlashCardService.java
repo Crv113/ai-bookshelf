@@ -30,11 +30,9 @@ public class FlashCardService {
         flashCard.setSummary(flashCardCreateDTO.getSummary());
         flashCard.setContent(flashCardCreateDTO.getContent());
 
-        if (flashCardCreateDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(flashCardCreateDTO.getCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            flashCard.setCategory(category);
-        }
+        Category category = categoryRepository.findById(flashCardCreateDTO.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+        flashCard.setCategory(category);
 
         flashCardRepository.save(flashCard);
 
@@ -52,6 +50,14 @@ public class FlashCardService {
         return toResponseDTO(flashCard);
     }
 
+    public List<FlashCardSummaryDTO> findByCategoryId(UUID categoryId) {
+
+        List<FlashCard> flashCards = flashCardRepository.findByCategoryId(categoryId);
+
+        return flashCards.stream()
+                .map(f -> new FlashCardSummaryDTO(f.getId(), f.getTitle(), f.getCreatedAt(), f.getSummary())).toList();
+    }
+
     public void delete(UUID id) {
         FlashCard flashCard = flashCardRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -65,13 +71,10 @@ public class FlashCardService {
         flashCard.setTitle(flashCardUpdateDTO.getTitle());
         flashCard.setSummary(flashCardUpdateDTO.getSummary());
 
-        if (flashCardUpdateDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(flashCardUpdateDTO.getCategoryId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            flashCard.setCategory(category);
-        } else {
-            flashCard.setCategory(null);
-        }
+        Category category = categoryRepository.findById(flashCardUpdateDTO.getCategoryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        flashCard.setCategory(category);
 
         flashCardRepository.save(flashCard);
 
@@ -80,10 +83,8 @@ public class FlashCardService {
 
     private FlashCardResponseDTO toResponseDTO(FlashCard flashCard) {
         Category category = flashCard.getCategory();
-        UUID categoryId = category != null ? category.getId() : null;
-        String categoryName = category != null ? category.getName() : null;
 
         return new FlashCardResponseDTO(flashCard.getId(), flashCard.getTitle(), flashCard.getCreatedAt(),
-                flashCard.getSummary(), flashCard.getContent(), categoryId, categoryName);
+                flashCard.getSummary(), flashCard.getContent(), category.getId(), category.getName());
     }
 }

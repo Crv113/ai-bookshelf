@@ -14,6 +14,4 @@ public class CategoryCreateDTO {
 
     @NotBlank
     private String name;
-
-    private UUID parentId;
 }

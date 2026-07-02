@@ -1,6 +1,5 @@
 package com.github.crv113.ai_bookshelf.services;
 
-import com.github.crv113.ai_bookshelf.AiBookshelfApplication;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,12 +25,6 @@ public class CategoryService {
         Category category = new Category();
         category.setName(categoryCreateDTO.getName());
 
-        if (categoryCreateDTO.getParentId() != null) {
-            Category parentCategory = categoryRepository.findById(categoryCreateDTO.getParentId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            category.setParent(parentCategory);
-        }
-
         categoryRepository.save(category);
 
         return toResponseDTO(category);
@@ -56,14 +49,6 @@ public class CategoryService {
 
         category.setName(categoryCreateDTO.getName());
 
-        if (categoryCreateDTO.getParentId() != null) {
-            Category parentCategory = categoryRepository.findById(categoryCreateDTO.getParentId())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            category.setParent(parentCategory);
-        } else {
-            category.setParent(null);
-        }
-
         categoryRepository.save(category);
 
         return toResponseDTO(category);
@@ -79,17 +64,10 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (category.getChildren() != null && !category.getChildren().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Cannot delete category with associated child categories.");
-        }
         categoryRepository.delete(category);
     }
 
     private CategoryResponseDTO toResponseDTO(Category category) {
-        UUID parentId = category.getParent() != null ? category.getParent().getId() : null;
-        String parentName = category.getParent() != null ? category.getParent().getName() : null;
-        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCreatedAt(), parentId,
-                parentName);
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCreatedAt());
     }
 }

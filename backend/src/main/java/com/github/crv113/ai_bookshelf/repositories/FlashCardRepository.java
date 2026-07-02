@@ -15,4 +15,6 @@ public interface FlashCardRepository extends JpaRepository<FlashCard, UUID> {
     public List<FlashCardSummaryDTO> findAllSummaries();
 
     public boolean existsByCategoryId(UUID categoryId);
+
+    public List<FlashCard> findByCategoryId(UUID categoryId);
 }

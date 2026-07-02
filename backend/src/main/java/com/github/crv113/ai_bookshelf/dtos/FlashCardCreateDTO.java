@@ -21,6 +21,7 @@ public class FlashCardCreateDTO {
     @NotBlank
     private String content;
 
+    @NotNull
     private UUID categoryId;
 
 }
