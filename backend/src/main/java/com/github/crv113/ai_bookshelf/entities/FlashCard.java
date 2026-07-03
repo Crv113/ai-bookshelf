@@ -14,14 +14,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import lombok.Setter;
+import lombok.AccessLevel;
 
 @Entity
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 @EntityListeners(AuditingEntityListener.class)
 public class FlashCard {
 
@@ -30,10 +28,13 @@ public class FlashCard {
     private UUID id;
 
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
     @NotBlank
     private String title;
+
     @NotBlank
     @Column(columnDefinition = "TEXT")
     private String summary;

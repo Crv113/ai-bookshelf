@@ -13,6 +13,8 @@ import com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardUpdateDTO;
 import com.github.crv113.ai_bookshelf.entities.Category;
 import com.github.crv113.ai_bookshelf.entities.FlashCard;
+import com.github.crv113.ai_bookshelf.exceptions.CategoryNotFoundException;
+import com.github.crv113.ai_bookshelf.exceptions.FlashCardNotFoundException;
 import com.github.crv113.ai_bookshelf.repositories.CategoryRepository;
 import com.github.crv113.ai_bookshelf.repositories.FlashCardRepository;
 
@@ -24,28 +26,26 @@ public class FlashCardService {
     private final FlashCardRepository flashCardRepository;
     private final CategoryRepository categoryRepository;
 
-    public FlashCardResponseDTO create(FlashCardCreateDTO flashCardCreateDTO) {
+    public FlashCardResponseDTO create(FlashCardCreateDTO flashCardCreateDTO) throws CategoryNotFoundException {
         FlashCard flashCard = new FlashCard();
         flashCard.setTitle(flashCardCreateDTO.getTitle());
         flashCard.setSummary(flashCardCreateDTO.getSummary());
         flashCard.setContent(flashCardCreateDTO.getContent());
 
         Category category = categoryRepository.findById(flashCardCreateDTO.getCategoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException(flashCardCreateDTO.getCategoryId()));
         flashCard.setCategory(category);
 
-        flashCardRepository.save(flashCard);
-
-        return toResponseDTO(flashCard);
+        return toResponseDTO(flashCardRepository.save(flashCard));
     }
 
     public List<FlashCardSummaryDTO> findAll() {
         return flashCardRepository.findAllSummaries();
     }
 
-    public FlashCardResponseDTO findById(UUID id) {
+    public FlashCardResponseDTO findById(UUID id) throws FlashCardNotFoundException {
         FlashCard flashCard = flashCardRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new FlashCardNotFoundException(id));
 
         return toResponseDTO(flashCard);
     }

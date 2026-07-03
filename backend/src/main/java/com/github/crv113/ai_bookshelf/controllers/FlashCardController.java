@@ -7,6 +7,8 @@ import com.github.crv113.ai_bookshelf.dtos.FlashCardCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardResponseDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO;
 import com.github.crv113.ai_bookshelf.dtos.FlashCardUpdateDTO;
+import com.github.crv113.ai_bookshelf.exceptions.CategoryNotFoundException;
+import com.github.crv113.ai_bookshelf.exceptions.FlashCardNotFoundException;
 import com.github.crv113.ai_bookshelf.services.FlashCardService;
 
 import jakarta.validation.Valid;
@@ -32,7 +34,9 @@ public class FlashCardController {
     private final FlashCardService flashCardService;
 
     @PostMapping()
-    public ResponseEntity<FlashCardResponseDTO> create(@Valid @RequestBody FlashCardCreateDTO flashCardCreateDTO) {
+    public ResponseEntity<FlashCardResponseDTO> create(@Valid @RequestBody FlashCardCreateDTO flashCardCreateDTO)
+            throws CategoryNotFoundException {
+
         return ResponseEntity.status(HttpStatus.CREATED).body(flashCardService.create(flashCardCreateDTO));
     }
 
@@ -42,7 +46,7 @@ public class FlashCardController {
     }
 
     @GetMapping("/{id}")
-    public FlashCardResponseDTO getById(@PathVariable UUID id) {
+    public FlashCardResponseDTO getById(@PathVariable UUID id) throws FlashCardNotFoundException {
         return flashCardService.findById(id);
     }
 

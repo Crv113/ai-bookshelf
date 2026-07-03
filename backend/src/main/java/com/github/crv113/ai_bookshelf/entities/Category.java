@@ -1,7 +1,6 @@
 package com.github.crv113.ai_bookshelf.entities;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -12,17 +11,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import lombok.Setter;
+import lombok.AccessLevel;
 
-@Getter
-@Setter
+@Data
 @Entity
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Category {
 
@@ -34,6 +29,7 @@ public class Category {
     private String name;
 
     @CreatedDate
+    @Setter(AccessLevel.NONE)
     @Column(updatable = false)
     private LocalDateTime createdAt;
 }
