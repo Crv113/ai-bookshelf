@@ -24,6 +24,7 @@ export default function FlashCardDetailPage() {
     mutationFn: () => deleteFlashCard(id!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['flashcards'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
       navigate('/')
     },
   })

@@ -51,7 +51,7 @@ public class FlashCardController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<FlashCardSummaryDTO> getByCategoryId(@PathVariable UUID categoryId) {
+    public List<FlashCardSummaryDTO> getByCategoryId(@PathVariable UUID categoryId) throws CategoryNotFoundException {
         return flashCardService.findByCategoryId(categoryId);
     }
 

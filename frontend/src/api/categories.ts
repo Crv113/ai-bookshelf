@@ -8,6 +8,12 @@ export async function fetchCategories(): Promise<Category[]> {
   return res.json()
 }
 
+export async function fetchCategoryById(id: string): Promise<Category> {
+  const res = await fetch(`${BASE}/${id}`)
+  if (!res.ok) throw new Error(`Erreur ${res.status} — catégorie introuvable`)
+  return res.json()
+}
+
 export async function createCategory(payload: CategoryCreatePayload): Promise<Category> {
   const res = await fetch(BASE, {
     method: 'POST',
