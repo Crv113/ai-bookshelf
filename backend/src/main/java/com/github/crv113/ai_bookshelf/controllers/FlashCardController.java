@@ -63,7 +63,8 @@ public class FlashCardController {
 
     @PutMapping("/{id}")
     public FlashCardResponseDTO update(@PathVariable UUID id,
-            @Valid @RequestBody FlashCardUpdateDTO flashCardUpdateDTO) {
+            @Valid @RequestBody FlashCardUpdateDTO flashCardUpdateDTO)
+            throws FlashCardNotFoundException, CategoryNotFoundException {
         return flashCardService.update(flashCardUpdateDTO, id);
     }
 

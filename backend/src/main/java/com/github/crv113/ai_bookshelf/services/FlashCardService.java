@@ -64,15 +64,16 @@ public class FlashCardService {
         flashCardRepository.delete(flashCard);
     }
 
-    public FlashCardResponseDTO update(FlashCardUpdateDTO flashCardUpdateDTO, UUID id) {
+    public FlashCardResponseDTO update(FlashCardUpdateDTO flashCardUpdateDTO, UUID id)
+            throws FlashCardNotFoundException, CategoryNotFoundException {
         FlashCard flashCard = flashCardRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new FlashCardNotFoundException(id));
 
         flashCard.setTitle(flashCardUpdateDTO.getTitle());
         flashCard.setSummary(flashCardUpdateDTO.getSummary());
 
         Category category = categoryRepository.findById(flashCardUpdateDTO.getCategoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException(flashCardUpdateDTO.getCategoryId()));
 
         flashCard.setCategory(category);
 

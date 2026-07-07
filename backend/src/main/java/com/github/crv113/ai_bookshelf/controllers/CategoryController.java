@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.crv113.ai_bookshelf.dtos.CategoryCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.CategoryResponseDTO;
+import com.github.crv113.ai_bookshelf.exceptions.CategoryNotFoundException;
 import com.github.crv113.ai_bookshelf.services.CategoryService;
 
 import jakarta.validation.Valid;
@@ -41,7 +42,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public CategoryResponseDTO getById(@PathVariable UUID id) {
+    public CategoryResponseDTO getById(@PathVariable UUID id) throws CategoryNotFoundException {
         return categoryService.findById(id);
     }
 
@@ -51,7 +52,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) throws CategoryNotFoundException {
         categoryService.delete(id);
         return ResponseEntity.noContent().build();
     }

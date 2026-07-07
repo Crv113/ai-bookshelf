@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.github.crv113.ai_bookshelf.dtos.CategoryCreateDTO;
 import com.github.crv113.ai_bookshelf.dtos.CategoryResponseDTO;
 import com.github.crv113.ai_bookshelf.entities.Category;
+import com.github.crv113.ai_bookshelf.exceptions.CategoryNotFoundException;
 import com.github.crv113.ai_bookshelf.repositories.CategoryRepository;
 import com.github.crv113.ai_bookshelf.repositories.FlashCardRepository;
 
@@ -30,9 +31,9 @@ public class CategoryService {
         return toResponseDTO(category);
     }
 
-    public CategoryResponseDTO findById(UUID id) {
+    public CategoryResponseDTO findById(UUID id) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
 
         return toResponseDTO(category);
     }
@@ -43,9 +44,9 @@ public class CategoryService {
                 .toList();
     }
 
-    public CategoryResponseDTO update(UUID id, CategoryCreateDTO categoryCreateDTO) {
+    public CategoryResponseDTO update(UUID id, CategoryCreateDTO categoryCreateDTO) throws CategoryNotFoundException {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
 
         category.setName(categoryCreateDTO.getName());
 
@@ -54,7 +55,7 @@ public class CategoryService {
         return toResponseDTO(category);
     }
 
-    public void delete(UUID id) {
+    public void delete(UUID id) throws CategoryNotFoundException {
 
         if (flashCardRepository.existsByCategoryId(id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -62,7 +63,7 @@ public class CategoryService {
         }
 
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
 
         categoryRepository.delete(category);
     }
