@@ -68,6 +68,8 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
 
+    // N+1 accepté au vu du nombre limité de catégories et de flashcards par
+    // catégorie
     private CategoryResponseDTO toResponseDTO(Category category) {
         long flashCardCount = flashCardRepository.countByCategoryId(category.getId());
         return new CategoryResponseDTO(category.getId(), category.getName(), category.getCreatedAt(), flashCardCount);
