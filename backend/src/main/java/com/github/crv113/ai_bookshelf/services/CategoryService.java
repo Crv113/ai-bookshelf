@@ -69,6 +69,7 @@ public class CategoryService {
     }
 
     private CategoryResponseDTO toResponseDTO(Category category) {
-        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCreatedAt());
+        long flashCardCount = flashCardRepository.countByCategoryId(category.getId());
+        return new CategoryResponseDTO(category.getId(), category.getName(), category.getCreatedAt(), flashCardCount);
     }
 }

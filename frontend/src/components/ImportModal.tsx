@@ -36,6 +36,7 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
     mutationFn: createFlashCard,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['flashcards'] })
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
       setJson('')
       setCategoryId('')
       setError(null)

@@ -50,7 +50,9 @@ public class FlashCardService {
         return toResponseDTO(flashCard);
     }
 
-    public List<FlashCardSummaryDTO> findByCategoryId(UUID categoryId) {
+    public List<FlashCardSummaryDTO> findByCategoryId(UUID categoryId) throws CategoryNotFoundException {
+        categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         List<FlashCard> flashCards = flashCardRepository.findByCategoryId(categoryId);
 

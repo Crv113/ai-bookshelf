@@ -14,6 +14,12 @@ export async function fetchFlashCard(id: string): Promise<FlashCardResponse> {
   return res.json()
 }
 
+export async function fetchFlashCardsByCategory(categoryId: string): Promise<FlashCardSummary[]> {
+  const res = await fetch(`${BASE}/category/${categoryId}`)
+  if (!res.ok) throw new Error(`Erreur ${res.status} — catégorie introuvable`)
+  return res.json()
+}
+
 export async function deleteFlashCard(id: string): Promise<void> {
   const res = await fetch(`${BASE}/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error(`Erreur ${res.status} lors de la suppression`)

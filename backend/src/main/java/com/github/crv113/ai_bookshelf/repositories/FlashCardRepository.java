@@ -17,4 +17,6 @@ public interface FlashCardRepository extends JpaRepository<FlashCard, UUID> {
     public boolean existsByCategoryId(UUID categoryId);
 
     public List<FlashCard> findByCategoryId(UUID categoryId);
+
+    public long countByCategoryId(UUID categoryId);
 }

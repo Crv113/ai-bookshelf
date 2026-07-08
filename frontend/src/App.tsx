@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
 import FlashCardListPage from './pages/FlashCardListPage'
 import FlashCardDetailPage from './pages/FlashCardDetailPage'
+import CategoryFlashCardsPage from './pages/CategoryFlashCardsPage'
 import ImportModal from './components/ImportModal'
 import {LibraryIcon} from './components/icons/icons'
 
@@ -58,6 +59,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<FlashCardListPage onImport={() => setImportOpen(true)} />} />
           <Route path="/flashcards/:id" element={<FlashCardDetailPage />} />
+          <Route path="/categories/:id" element={<CategoryFlashCardsPage />} />
         </Routes>
       </main>
 

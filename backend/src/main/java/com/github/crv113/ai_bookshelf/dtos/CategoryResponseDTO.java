@@ -13,4 +13,5 @@ public class CategoryResponseDTO {
     private UUID id;
     private String name;
     private LocalDateTime createdAt;
+    private long flashCardCount;
 }

@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { fetchFlashCards } from '../api/flashcards'
+import { fetchCategories } from '../api/categories'
 import {CardIcon, CloseIcon, LibraryIcon, UploadIcon} from './icons/icons'
+import SidebarNavItem from './SidebarNavItem'
 
 interface SidebarProps {
   onImport: () => void
@@ -15,8 +17,14 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
     queryKey: ['flashcards'],
     queryFn: fetchFlashCards,
   })
+  const { data: categories = [], isError: categoriesError } = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  })
 
   const isHome = location.pathname === '/'
+  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name))
+  const showCategories = !categoriesError && sortedCategories.length > 0
 
   return (
     <aside
@@ -54,21 +62,30 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
       </div>
 
       <nav className="flex-1 px-2 py-3 space-y-0.5">
-        <Link
+        <SidebarNavItem
           to="/"
           onClick={onMobileClose}
-          className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${isHome ? 'bg-[rgba(255,255,255,0.08)] text-sidebar-active' : 'text-muted hover:bg-[rgba(255,255,255,0.04)]'}`}
-        >
-          <div className="flex items-center gap-2.5">
-            <CardIcon active={isHome} />
-            <span>Toutes les fiches</span>
-          </div>
-          <span
-            className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-white-subtle text-muted"
-          >
-            {flashCards.length}
-          </span>
-        </Link>
+          label="Toutes les fiches"
+          count={flashCards.length}
+          active={isHome}
+          icon={<CardIcon active={isHome} />}
+        />
+
+        {showCategories && sortedCategories.map((category) => {
+          const categoryPath = `/categories/${category.id}`
+          const isActive = location.pathname === categoryPath
+          return (
+            <SidebarNavItem
+              key={category.id}
+              to={categoryPath}
+              onClick={onMobileClose}
+              label={category.name}
+              count={category.flashCardCount}
+              active={isActive}
+              icon={<CardIcon active={isActive} />}
+            />
+          )
+        })}
 
         <button
           onClick={onImport}
