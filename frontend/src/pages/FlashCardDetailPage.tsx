@@ -3,10 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchFlashCard, deleteFlashCard } from '../api/flashcards'
 import MarkdownRenderer from '../components/MarkdownRenderer'
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })
-}
+import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 
 export default function FlashCardDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -49,7 +46,7 @@ export default function FlashCardDetailPage() {
   }
 
   return (
-    <div className="px-4 py-6 lg:px-12 lg:py-10 max-w-3xl mx-auto">
+    <div className="px-4 py-6 lg:px-12 lg:py-10 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <Link
           to="/"
@@ -91,14 +88,14 @@ export default function FlashCardDetailPage() {
         )}
       </div>
 
-      <header className="mb-8 max-w-2xl">
+      <header className="mb-8 max-w-4xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">
           Fiche de révision
         </p>
         <h1 className="font-display text-3xl font-bold text-stone-900 leading-snug mb-3">
           {card.title}
         </h1>
-        <p className="text-xs text-stone-400">{formatDate(card.createdAt)}</p>
+        <p className="text-xs text-stone-400">{formatFlashCardMeta(card)}</p>
         {card.summary && (
           <div className="mt-4 pl-4" style={{ borderLeft: '2px solid rgba(196,116,42,0.4)' }}>
             <p className="text-sm text-stone-600 leading-relaxed italic">{card.summary}</p>
@@ -106,9 +103,9 @@ export default function FlashCardDetailPage() {
         )}
       </header>
 
-      <hr className="border-stone-200/70 mb-8 max-w-2xl" />
+      <hr className="border-stone-200/70 mb-8 max-w-4xl" />
 
-      <div className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-2xl overflow-hidden -mx-4 lg:mx-0 bg-card">
+      <div className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-4xl overflow-hidden -mx-4 lg:mx-0 bg-card">
         <MarkdownRenderer content={card.content} />
       </div>
     </div>

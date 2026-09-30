@@ -72,7 +72,7 @@ describe('CategoryFlashCardsPage', () => {
       id: 'cat-1', name: 'Java', createdAt: '2026-01-01', flashCardCount: 1,
     })
     vi.mocked(fetchFlashCardsByCategory).mockResolvedValue([
-      { id: 'fc-1', title: 'Les generics', createdAt: '2026-01-01', summary: 'Résumé generics' },
+      { id: 'fc-1', title: 'Les generics', createdAt: '2026-01-01', summary: 'Résumé generics', model: 'Claude Opus 5.5', estimatedTime: 10 },
     ])
 
     renderPage()

@@ -14,4 +14,6 @@ public class FlashCardSummaryDTO {
     private String title;
     private LocalDateTime createdAt;
     private String summary;
+    private String model;
+    private Integer estimatedTime;
 }

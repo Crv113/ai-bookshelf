@@ -2,13 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { fetchFlashCards } from '../api/flashcards'
 import { UploadIcon } from '../components/icons/icons'
+import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 
 interface FlashCardListPageProps {
   onImport: () => void
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 function BookIcon() {
@@ -107,7 +104,7 @@ export default function FlashCardListPage({ onImport }: FlashCardListPageProps) 
                   {card.title}
                 </h3>
                 <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{card.summary}</p>
-                <p className="text-xs text-stone-400 mt-3">{formatDate(card.createdAt)}</p>
+                <p className="text-xs text-stone-400 mt-3">{formatFlashCardMeta(card)}</p>
               </Link>
             </li>
           ))}

@@ -43,6 +43,10 @@ public class FlashCard {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    private String model;
+
+    private Integer estimatedTime;
+
     @ManyToOne
     @JoinColumn(nullable = false)
     private Category category;

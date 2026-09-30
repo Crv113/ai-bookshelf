@@ -11,12 +11,12 @@ import com.github.crv113.ai_bookshelf.entities.FlashCard;
 
 public interface FlashCardRepository extends JpaRepository<FlashCard, UUID> {
 
-    @Query("SELECT new com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO(f.id, f.title, f.createdAt,f.summary) FROM FlashCard f")
+    @Query("SELECT new com.github.crv113.ai_bookshelf.dtos.FlashCardSummaryDTO(f.id, f.title, f.createdAt, f.summary, f.model, f.estimatedTime) FROM FlashCard f ORDER BY f.createdAt ASC")
     public List<FlashCardSummaryDTO> findAllSummaries();
 
     public boolean existsByCategoryId(UUID categoryId);
 
-    public List<FlashCard> findByCategoryId(UUID categoryId);
+    public List<FlashCard> findByCategoryIdOrderByCreatedAtAsc(UUID categoryId);
 
     public long countByCategoryId(UUID categoryId);
 }

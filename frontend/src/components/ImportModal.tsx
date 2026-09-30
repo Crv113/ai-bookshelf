@@ -69,15 +69,16 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    let parsed: Partial<FlashCardCreatePayload>
+    let parsed: Partial<Omit<FlashCardCreatePayload, 'estimatedTime'>> & { estimated_time?: string | number }
     try {
       parsed = JSON.parse(json)
     } catch {
       setError('JSON invalide. Vérifiez la syntaxe.')
       return
     }
-    if (!parsed.title || !parsed.summary || !parsed.content) {
-      setError('Le JSON doit contenir title, summary et content.')
+    const estimatedTime = Number(parsed.estimated_time)
+    if (!parsed.title || !parsed.summary || !parsed.content || !parsed.model || !(estimatedTime > 0)) {
+      setError('Le JSON doit contenir title, summary, content, model et estimated_time.')
       return
     }
     if (!categoryId) {
@@ -85,7 +86,14 @@ export default function ImportModal({ open, onClose }: ImportModalProps) {
       return
     }
     setError(null)
-    mutation.mutate({ title: parsed.title, summary: parsed.summary, content: parsed.content, categoryId })
+    mutation.mutate({
+      title: parsed.title,
+      summary: parsed.summary,
+      content: parsed.content,
+      model: parsed.model,
+      estimatedTime,
+      categoryId,
+    })
   }
 
   function handleClose() {

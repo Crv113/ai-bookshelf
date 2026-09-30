@@ -2,10 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams, Link } from 'react-router-dom'
 import { fetchCategoryById } from '../api/categories'
 import { fetchFlashCardsByCategory } from '../api/flashcards'
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })
-}
+import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 
 export default function CategoryFlashCardsPage() {
   const { id } = useParams<{ id: string }>()
@@ -77,7 +74,7 @@ export default function CategoryFlashCardsPage() {
                   {card.title}
                 </h3>
                 <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{card.summary}</p>
-                <p className="text-xs text-stone-400 mt-3">{formatDate(card.createdAt)}</p>
+                <p className="text-xs text-stone-400 mt-3">{formatFlashCardMeta(card)}</p>
               </Link>
             </li>
           ))}

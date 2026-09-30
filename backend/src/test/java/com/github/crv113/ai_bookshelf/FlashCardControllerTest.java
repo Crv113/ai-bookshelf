@@ -52,10 +52,12 @@ public class FlashCardControllerTest {
                 post("/api/flashcards")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
-                                "{\"title\":\"mon titre\", \"summary\":\"une flash\", \"content\":\"le content de la flashcard\", \"categoryId\":\""
+                                "{\"title\":\"mon titre\", \"summary\":\"une flash\", \"content\":\"le content de la flashcard\", \"model\":\"Claude Opus 5.5\", \"estimatedTime\":12, \"categoryId\":\""
                                         + category.getId() + "\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value("mon titre"));
+                .andExpect(jsonPath("$.title").value("mon titre"))
+                .andExpect(jsonPath("$.model").value("Claude Opus 5.5"))
+                .andExpect(jsonPath("$.estimatedTime").value(12));
     }
 
     @Test

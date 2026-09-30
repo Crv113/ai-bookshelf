@@ -31,6 +31,8 @@ public class FlashCardService {
         flashCard.setTitle(flashCardCreateDTO.getTitle());
         flashCard.setSummary(flashCardCreateDTO.getSummary());
         flashCard.setContent(flashCardCreateDTO.getContent());
+        flashCard.setModel(flashCardCreateDTO.getModel());
+        flashCard.setEstimatedTime(flashCardCreateDTO.getEstimatedTime());
 
         Category category = categoryRepository.findById(flashCardCreateDTO.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException(flashCardCreateDTO.getCategoryId()));
@@ -54,10 +56,11 @@ public class FlashCardService {
         categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
-        List<FlashCard> flashCards = flashCardRepository.findByCategoryId(categoryId);
+        List<FlashCard> flashCards = flashCardRepository.findByCategoryIdOrderByCreatedAtAsc(categoryId);
 
         return flashCards.stream()
-                .map(f -> new FlashCardSummaryDTO(f.getId(), f.getTitle(), f.getCreatedAt(), f.getSummary())).toList();
+                .map(f -> new FlashCardSummaryDTO(f.getId(), f.getTitle(), f.getCreatedAt(), f.getSummary(), f.getModel(),
+                        f.getEstimatedTime())).toList();
     }
 
     public void delete(UUID id) {
@@ -88,6 +91,7 @@ public class FlashCardService {
         Category category = flashCard.getCategory();
 
         return new FlashCardResponseDTO(flashCard.getId(), flashCard.getTitle(), flashCard.getCreatedAt(),
-                flashCard.getSummary(), flashCard.getContent(), category.getId(), category.getName());
+                flashCard.getSummary(), flashCard.getContent(), flashCard.getModel(), flashCard.getEstimatedTime(),
+                category.getId(), category.getName());
     }
 }

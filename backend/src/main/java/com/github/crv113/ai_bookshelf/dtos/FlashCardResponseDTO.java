@@ -15,6 +15,8 @@ public class FlashCardResponseDTO {
     private LocalDateTime createdAt;
     private String summary;
     private String content;
+    private String model;
+    private Integer estimatedTime;
     private UUID categoryId;
     private String categoryName;
 }

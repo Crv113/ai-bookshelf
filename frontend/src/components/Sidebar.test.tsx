@@ -31,8 +31,8 @@ function renderSidebar(initialPath = '/') {
 describe('Sidebar', () => {
   beforeEach(() => {
     vi.mocked(fetchFlashCards).mockResolvedValue([
-      { id: '1', title: 'A', createdAt: '2026-01-01', summary: 's' },
-      { id: '2', title: 'B', createdAt: '2026-01-01', summary: 's' },
+      { id: '1', title: 'A', createdAt: '2026-01-01', summary: 's', model: null, estimatedTime: null },
+      { id: '2', title: 'B', createdAt: '2026-01-01', summary: 's', model: null, estimatedTime: null },
     ])
   })
 
