@@ -4,6 +4,10 @@ import mermaid from 'mermaid'
 mermaid.initialize({
   startOnLoad: false,
   theme: 'base',
+  // Labels en <text> SVG plutôt qu'en HTML (foreignObject) : les boîtes HTML
+  // sont mesurées puis figées, et le texte est tronqué dès que le rendu diffère
+  // (police, CSS de la page, moteur du navigateur).
+  htmlLabels: false,
   themeVariables: {
     primaryColor: '#E8D5B4',
     primaryTextColor: '#3B2A1A',
@@ -45,8 +49,10 @@ export default function MermaidDiagram({ chart }: MermaidDiagramProps) {
   useEffect(() => {
     if (!ref.current) return
     ref.current.removeAttribute('data-processed')
-    mermaid
-      .render(id, chart)
+    // Mermaid mesure les labels au moment du rendu : on attend la police web
+    // pour éviter des boîtes calculées avec la police de repli.
+    document.fonts.ready
+      .then(() => mermaid.render(id, chart))
       .then(({ svg }) => {
         if (ref.current) ref.current.innerHTML = svg
       })
@@ -60,7 +66,7 @@ export default function MermaidDiagram({ chart }: MermaidDiagramProps) {
   return (
     <div
       ref={ref}
-      className="my-6 flex justify-center overflow-x-auto rounded-xl py-4 bg-surface"
+      className="not-prose my-6 flex justify-center overflow-x-auto rounded-xl py-4 bg-surface"
     />
   )
 }
