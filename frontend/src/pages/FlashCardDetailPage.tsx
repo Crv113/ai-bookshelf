@@ -26,6 +26,15 @@ export default function FlashCardDetailPage() {
     },
   })
 
+  // Le titre du document sert de nom de fichier par défaut dans « Enregistrer en PDF »
+  function handleExportPdf() {
+    if (!card) return
+    const previousTitle = document.title
+    document.title = card.title
+    window.print()
+    document.title = previousTitle
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64 text-stone-400 text-sm">
@@ -46,8 +55,8 @@ export default function FlashCardDetailPage() {
   }
 
   return (
-    <div className="px-4 py-6 lg:px-12 lg:py-10 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="px-4 py-6 lg:px-12 lg:py-10 max-w-4xl mx-auto print:p-0 print:max-w-none">
+      <div className="flex items-center justify-between mb-8 print:hidden">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors"
@@ -58,34 +67,46 @@ export default function FlashCardDetailPage() {
           Retour
         </Link>
 
-        {confirming ? (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-stone-500">Supprimer définitivement ?</span>
-            <button
-              onClick={() => deleteMutation.mutate()}
-              disabled={deleteMutation.isPending}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700 disabled:opacity-50 hover:cursor-pointer"
-            >
-              {deleteMutation.isPending ? 'Suppression…' : 'Confirmer'}
-            </button>
-            <button
-              onClick={() => setConfirming(false)}
-              className=" py-1.5 text-xs text-stone-500 hover:text-stone-800 transition-colors hover:cursor-pointer"
-            >
-              Annuler
-            </button>
-          </div>
-        ) : (
+        <div className="flex items-center gap-4">
           <button
-            onClick={() => setConfirming(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-red-500 transition-colors hover:cursor-pointer"
+            onClick={handleExportPdf}
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
             </svg>
-            Supprimer
+            PDF
           </button>
-        )}
+
+          {confirming ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-stone-500">Supprimer définitivement ?</span>
+              <button
+                onClick={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+                className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-600 text-white transition-colors hover:bg-red-700 disabled:opacity-50 hover:cursor-pointer"
+              >
+                {deleteMutation.isPending ? 'Suppression…' : 'Confirmer'}
+              </button>
+              <button
+                onClick={() => setConfirming(false)}
+                className=" py-1.5 text-xs text-stone-500 hover:text-stone-800 transition-colors hover:cursor-pointer"
+              >
+                Annuler
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirming(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-red-500 transition-colors hover:cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
+              Supprimer
+            </button>
+          )}
+        </div>
       </div>
 
       <header className="mb-8 max-w-4xl">
@@ -105,7 +126,7 @@ export default function FlashCardDetailPage() {
 
       <hr className="border-stone-200/70 mb-8 max-w-4xl" />
 
-      <div className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-4xl overflow-hidden -mx-4 lg:mx-0 bg-card">
+      <div className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-4xl overflow-hidden -mx-4 lg:mx-0 bg-card print:bg-transparent print:p-0 print:mx-0 print:max-w-none print:overflow-visible">
         <MarkdownRenderer content={card.content} />
       </div>
     </div>

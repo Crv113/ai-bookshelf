@@ -29,7 +29,7 @@ const components: Components = {
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
-    <div className="prose prose-stone max-w-none px-4 py-4 lg:px-0 lg:py-0">
+    <div className="prose prose-stone max-w-none px-4 py-4 lg:px-0 lg:py-0 print:p-0">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSanitize]}
