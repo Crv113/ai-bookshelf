@@ -55,7 +55,8 @@ export default function App() {
         onMobileClose={() => setSidebarOpen(false)}
       />
 
-      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0 bg-page print:pt-0 print:overflow-visible print:bg-white">
+      {/* Pas d'overflow ici : il casserait position:sticky des descendants (la page défile sur window) */}
+      <main className="flex-1 min-w-0 pt-14 lg:pt-0 bg-page print:pt-0 print:overflow-visible print:bg-white">
         <Routes>
           <Route path="/" element={<FlashCardListPage onImport={() => setImportOpen(true)} />} />
           <Route path="/flashcards/:id" element={<FlashCardDetailPage />} />

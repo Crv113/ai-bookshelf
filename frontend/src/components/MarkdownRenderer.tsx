@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeSanitize from 'rehype-sanitize'
+import rehypeSlug from 'rehype-slug'
 import type { Components } from 'react-markdown'
 import MermaidDiagram from './MermaidDiagram'
 
@@ -29,10 +30,12 @@ const components: Components = {
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
-    <div className="prose prose-stone max-w-none px-4 py-4 lg:px-0 lg:py-0 print:p-0">
+    <div className="prose prose-stone max-w-none px-4 py-4 lg:px-0 lg:py-0 print:p-0 prose-headings:scroll-mt-20 lg:prose-headings:scroll-mt-8">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeSanitize]}
+        // rehype-slug après rehype-sanitize : sanitize préfixe les id en « user-content- » (anti DOM clobbering),
+        // placé avant il casserait les liens du sommaire ; ici les id sont dérivés du texte des titres, risque faible
+        rehypePlugins={[rehypeSanitize, rehypeSlug]}
         components={components}
       >
         {content}
