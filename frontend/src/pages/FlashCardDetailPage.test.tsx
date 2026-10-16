@@ -1,20 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, waitFor, within, fireEvent, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import FlashCardDetailPage from './FlashCardDetailPage'
-import { fetchFlashCard } from '../api/flashcards'
+import { fetchFlashCard, updateFlashCard } from '../api/flashcards'
 import type { FlashCardResponse } from '../types/flashcard'
 
 vi.mock('../api/flashcards', () => ({
   fetchFlashCard: vi.fn(),
   deleteFlashCard: vi.fn(),
+  updateFlashCard: vi.fn(),
 }))
 
 vi.mock('../components/MermaidDiagram', () => ({ default: () => null }))
 
-function buildCard(content: string): FlashCardResponse {
+function buildCard(content: string, overrides: Partial<FlashCardResponse> = {}): FlashCardResponse {
   return {
     id: 'fc-1',
     title: 'Les generics',
@@ -24,6 +25,7 @@ function buildCard(content: string): FlashCardResponse {
     model: null,
     estimatedTime: null,
     categoryId: 'cat-1',
+    ...overrides,
   }
 }
 
@@ -120,5 +122,185 @@ describe('FlashCardDetailPage table of contents', () => {
     await userEvent.keyboard('{Escape}')
 
     expect(screen.queryByRole('dialog', { name: 'Sommaire' })).not.toBeInTheDocument()
+  })
+})
+
+const originalClipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+
+function setClipboard(value: unknown) {
+  Object.defineProperty(navigator, 'clipboard', { value, configurable: true })
+}
+
+function buildFullCard() {
+  return buildCard('## Seul titre\n\nTexte', { model: 'Claude Opus 5.5', estimatedTime: 12 })
+}
+
+describe('FlashCardDetailPage copy JSON', () => {
+  beforeEach(() => {
+    vi.mocked(fetchFlashCard).mockReset()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    if (originalClipboard) {
+      Object.defineProperty(navigator, 'clipboard', originalClipboard)
+    } else {
+      setClipboard(undefined)
+    }
+  })
+
+  it('copies the card in the import format and resets the label after 2 seconds', async () => {
+    const card = buildFullCard()
+    vi.mocked(fetchFlashCard).mockResolvedValue(card)
+    renderPage()
+    const button = await screen.findByRole('button', { name: 'Copier JSON' })
+
+    vi.useFakeTimers()
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    setClipboard({ writeText })
+
+    await act(async () => {
+      fireEvent.click(button)
+    })
+
+    expect(writeText).toHaveBeenCalledWith(JSON.stringify({
+      title: card.title,
+      summary: card.summary,
+      model: card.model,
+      content: card.content,
+      estimated_time: 12,
+    }, null, 2))
+    expect(screen.getByRole('button', { name: 'Copié' })).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
+
+    expect(screen.getByRole('button', { name: 'Copier JSON' })).toBeInTheDocument()
+  })
+
+  it('shows a failure message when the clipboard rejects', async () => {
+    vi.mocked(fetchFlashCard).mockResolvedValue(buildFullCard())
+    renderPage()
+    const button = await screen.findByRole('button', { name: 'Copier JSON' })
+    setClipboard({ writeText: vi.fn().mockRejectedValue(new Error('denied')) })
+
+    await act(async () => {
+      fireEvent.click(button)
+    })
+
+    expect(screen.getByRole('button', { name: 'Échec de la copie' })).toBeInTheDocument()
+  })
+
+  it('shows a failure message when the clipboard is unavailable', async () => {
+    vi.mocked(fetchFlashCard).mockResolvedValue(buildFullCard())
+    renderPage()
+    const button = await screen.findByRole('button', { name: 'Copier JSON' })
+    setClipboard(undefined)
+
+    await act(async () => {
+      fireEvent.click(button)
+    })
+
+    expect(screen.getByRole('button', { name: 'Échec de la copie' })).toBeInTheDocument()
+  })
+})
+
+describe('FlashCardDetailPage replace', () => {
+  const newContent = '## Alpha\n\nA\n\n## Beta\n\nB\n\n## Gamma\n\nC'
+  const newJson = JSON.stringify({
+    title: 'Nouveau titre',
+    summary: 'Nouveau résumé',
+    model: 'Claude Opus 5.5',
+    content: newContent,
+    estimated_time: 20,
+  })
+
+  beforeEach(() => {
+    vi.mocked(fetchFlashCard).mockReset()
+    vi.mocked(updateFlashCard).mockReset()
+    Element.prototype.scrollIntoView = vi.fn()
+  })
+
+  async function openReplaceModal() {
+    vi.mocked(fetchFlashCard).mockResolvedValue(buildFullCard())
+    renderPage()
+    fireEvent.click(await screen.findByRole('button', { name: 'Remplacer' }))
+    return screen.getByRole('dialog', { name: 'Remplacer la fiche' })
+  }
+
+  function typeJson(dialog: HTMLElement, value: string) {
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'JSON de la fiche' }), { target: { value } })
+  }
+
+  it('opens a modal with a warning and no category selector', async () => {
+    const dialog = await openReplaceModal()
+
+    expect(within(dialog).getByText(/sera définitivement écrasé/)).toBeInTheDocument()
+    expect(within(dialog).queryByRole('combobox')).not.toBeInTheDocument()
+    expect(within(dialog).getByRole('textbox', { name: 'JSON de la fiche' })).toHaveValue('')
+  })
+
+  it('replaces the card while keeping its category and refreshes the page', async () => {
+    vi.mocked(updateFlashCard).mockResolvedValue({
+      ...buildFullCard(),
+      title: 'Nouveau titre',
+      summary: 'Nouveau résumé',
+      content: newContent,
+      estimatedTime: 20,
+    })
+    const dialog = await openReplaceModal()
+
+    typeJson(dialog, newJson)
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remplacer' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Remplacer la fiche' })).not.toBeInTheDocument())
+    expect(updateFlashCard).toHaveBeenCalledWith('fc-1', {
+      title: 'Nouveau titre',
+      summary: 'Nouveau résumé',
+      content: newContent,
+      model: 'Claude Opus 5.5',
+      estimatedTime: 20,
+      categoryId: 'cat-1',
+    })
+    expect(screen.getByRole('heading', { level: 1, name: 'Nouveau titre' })).toBeInTheDocument()
+    expect(screen.getByText('Nouveau résumé')).toBeInTheDocument()
+    const nav = await screen.findByRole('navigation', { name: 'Sommaire' })
+    await waitFor(() => expect(within(nav).getAllByRole('link')).toHaveLength(3))
+  })
+
+  it('shows an error and keeps the modal open on invalid JSON', async () => {
+    const dialog = await openReplaceModal()
+
+    typeJson(dialog, '{ "title": ')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remplacer' }))
+
+    expect(within(dialog).getByText('JSON invalide. Vérifiez la syntaxe.')).toBeInTheDocument()
+    expect(updateFlashCard).not.toHaveBeenCalled()
+    expect(screen.getByRole('dialog', { name: 'Remplacer la fiche' })).toBeInTheDocument()
+  })
+
+  it('shows the API error and keeps the JSON when the update fails', async () => {
+    vi.mocked(updateFlashCard).mockRejectedValue(new Error('Category with ID x not found.'))
+    const dialog = await openReplaceModal()
+
+    typeJson(dialog, newJson)
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remplacer' }))
+
+    expect(await within(dialog).findByText('Category with ID x not found.')).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Remplacer la fiche' })).toBeInTheDocument()
+    expect(within(dialog).getByRole('textbox', { name: 'JSON de la fiche' })).toHaveValue(newJson)
+  })
+
+  it('clears the JSON when the modal is cancelled and reopened', async () => {
+    const dialog = await openReplaceModal()
+
+    typeJson(dialog, newJson)
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Annuler' }))
+    expect(screen.queryByRole('dialog', { name: 'Remplacer la fiche' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remplacer' }))
+    const reopened = screen.getByRole('dialog', { name: 'Remplacer la fiche' })
+    expect(within(reopened).getByRole('textbox', { name: 'JSON de la fiche' })).toHaveValue('')
   })
 })

@@ -74,17 +74,17 @@ public class FlashCardService {
         FlashCard flashCard = flashCardRepository.findById(id)
                 .orElseThrow(() -> new FlashCardNotFoundException(id));
 
-        flashCard.setTitle(flashCardUpdateDTO.getTitle());
-        flashCard.setSummary(flashCardUpdateDTO.getSummary());
-
         Category category = categoryRepository.findById(flashCardUpdateDTO.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException(flashCardUpdateDTO.getCategoryId()));
 
+        flashCard.setTitle(flashCardUpdateDTO.getTitle());
+        flashCard.setSummary(flashCardUpdateDTO.getSummary());
+        flashCard.setContent(flashCardUpdateDTO.getContent());
+        flashCard.setModel(flashCardUpdateDTO.getModel());
+        flashCard.setEstimatedTime(flashCardUpdateDTO.getEstimatedTime());
         flashCard.setCategory(category);
 
-        flashCardRepository.save(flashCard);
-
-        return toResponseDTO(flashCard);
+        return toResponseDTO(flashCardRepository.save(flashCard));
     }
 
     private FlashCardResponseDTO toResponseDTO(FlashCard flashCard) {

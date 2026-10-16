@@ -8,9 +8,9 @@ export function LibraryIcon() {
 };
 
 
-export function UploadIcon() {
+export function UploadIcon({ color = '#6B5540' }: { color?: string } = {}) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="#6B5540">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill={color}>
       <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/>
     </svg>
   )
