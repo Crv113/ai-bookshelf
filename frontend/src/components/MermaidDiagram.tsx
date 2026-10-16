@@ -66,7 +66,7 @@ export default function MermaidDiagram({ chart }: MermaidDiagramProps) {
   return (
     <div
       ref={ref}
-      className="not-prose my-6 flex justify-center overflow-x-auto rounded-xl py-4 bg-surface"
+      className="mermaid-diagram not-prose my-6 flex justify-center overflow-x-auto rounded-xl py-4 bg-surface"
     />
   )
 }

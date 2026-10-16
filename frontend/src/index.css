@@ -28,3 +28,47 @@
     font-family: 'Inter', system-ui, sans-serif;
   }
 }
+
+@media print {
+  @page {
+    margin: 15mm;
+  }
+
+  body {
+    background-color: white;
+  }
+
+  /* Garde les fonds des blocs de code et diagrammes, que le navigateur retire par défaut */
+  pre {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* Évite de couper un bloc de code, un tableau ou un schéma entre deux pages */
+  pre,
+  table,
+  svg {
+    break-inside: avoid;
+  }
+
+  h1, h2, h3, h4 {
+    break-after: avoid;
+  }
+
+  /* Un SVG ne peut pas être découpé sur plusieurs pages : on réduit les schémas
+     plus hauts qu'une page (A4 moins les marges et le cadre) pour qu'ils tiennent */
+  svg[id^="mermaid-"] {
+    max-height: 220mm;
+  }
+
+  /* Pas de défilement sur papier : on retire le clipping et on replie les lignes longues */
+  pre,
+  .mermaid-diagram {
+    overflow: visible;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

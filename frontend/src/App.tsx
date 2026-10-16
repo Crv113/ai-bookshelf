@@ -21,10 +21,10 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen bg-page">
+    <div className="flex min-h-screen bg-page print:block print:bg-white">
       {/* Mobile top bar */}
       <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center justify-between px-4 border-b border-white-subtle bg-sidebar"
+        className="lg:hidden print:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center justify-between px-4 border-b border-white-subtle bg-sidebar"
       >
         <button
           onClick={() => setSidebarOpen(true)}
@@ -55,7 +55,8 @@ export default function App() {
         onMobileClose={() => setSidebarOpen(false)}
       />
 
-      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0 bg-page">
+      {/* Pas d'overflow ici : il casserait position:sticky des descendants (la page défile sur window) */}
+      <main className="flex-1 min-w-0 pt-14 lg:pt-0 bg-page print:pt-0 print:overflow-visible print:bg-white">
         <Routes>
           <Route path="/" element={<FlashCardListPage onImport={() => setImportOpen(true)} />} />
           <Route path="/flashcards/:id" element={<FlashCardDetailPage />} />

@@ -28,7 +28,7 @@ export default function Sidebar({ onImport, mobileOpen, onMobileClose }: Sidebar
 
   return (
     <aside
-      className="fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 shrink-0 bg-sidebar"
+      className="print:hidden fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 shrink-0 bg-sidebar"
       style={{
         width: '208px',
         transform: mobileOpen ? 'translateX(0)' : undefined,
