@@ -1,4 +1,4 @@
-import type { FlashCardSummary, FlashCardResponse, FlashCardCreatePayload } from '../types/flashcard'
+import type { FlashCardSummary, FlashCardResponse, FlashCardCreatePayload, FlashCardUpdatePayload } from '../types/flashcard'
 
 const BASE = '/api/flashcards'
 
@@ -34,6 +34,19 @@ export async function createFlashCard(payload: FlashCardCreatePayload): Promise<
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error((err as { message?: string })?.message ?? `Erreur ${res.status} lors de la création`)
+  }
+  return res.json()
+}
+
+export async function updateFlashCard(id: string, payload: FlashCardUpdatePayload): Promise<FlashCardResponse> {
+  const res = await fetch(`${BASE}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error((err as { message?: string })?.message ?? `Erreur ${res.status} lors de la mise à jour`)
   }
   return res.json()
 }

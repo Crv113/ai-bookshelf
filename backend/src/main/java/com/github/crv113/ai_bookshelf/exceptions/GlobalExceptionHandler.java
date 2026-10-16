@@ -28,6 +28,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponseDTO(exception.getStatusCode().value(), exception.getMessage()));
     }
 
+    @ExceptionHandler({ FlashCardNotFoundException.class, CategoryNotFoundException.class })
+    public ResponseEntity<ErrorResponseDTO> handleNotFound(Exception exception) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
+    }
+
     @Override
     public ResponseEntity<Object> handleExceptionInternal(Exception ex,
             Object body,

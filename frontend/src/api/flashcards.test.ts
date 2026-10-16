@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { fetchFlashCards, fetchFlashCard, fetchFlashCardsByCategory } from './flashcards'
+import { fetchFlashCards, fetchFlashCard, fetchFlashCardsByCategory, updateFlashCard } from './flashcards'
 
 describe('flashcards api', () => {
   beforeEach(() => {
@@ -48,6 +48,51 @@ describe('flashcards api', () => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 404 }))
 
       await expect(fetchFlashCardsByCategory('missing-category')).rejects.toThrow(/introuvable/)
+    })
+  })
+
+  describe('updateFlashCard', () => {
+    const payload = {
+      title: 'Titre',
+      summary: 'Résumé',
+      content: '## A',
+      model: 'Claude Opus 5.5',
+      estimatedTime: 12,
+      categoryId: 'cat-1',
+    }
+
+    it('sends a PUT request and returns the parsed flashcard', async () => {
+      const updated = { id: 'fc-1', createdAt: '2026-01-01', ...payload }
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => updated }))
+
+      const result = await updateFlashCard('fc-1', payload)
+
+      expect(fetch).toHaveBeenCalledWith('/api/flashcards/fc-1', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      expect(result).toEqual(updated)
+    })
+
+    it('rejects with the API error message', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: false,
+        status: 404,
+        json: async () => ({ message: 'FlashCard with ID fc-1 not found.' }),
+      }))
+
+      await expect(updateFlashCard('fc-1', payload)).rejects.toThrow('FlashCard with ID fc-1 not found.')
+    })
+
+    it('rejects with a fallback message when the body is unreadable', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        json: async () => { throw new Error('invalid') },
+      }))
+
+      await expect(updateFlashCard('fc-1', payload)).rejects.toThrow('Erreur 500 lors de la mise à jour')
     })
   })
 })

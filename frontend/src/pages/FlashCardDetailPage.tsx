@@ -4,16 +4,29 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchFlashCard, deleteFlashCard } from '../api/flashcards'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import TableOfContents from '../components/TableOfContents'
-import { ChevronIcon, CloseIcon, ListIcon } from '../components/icons/icons'
+import ReplaceModal from '../components/ReplaceModal'
+import { ChevronIcon, CloseIcon, CopyIcon, ListIcon, UploadIcon } from '../components/icons/icons'
 import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 import { useTocHeadings } from '../hooks/useTocHeadings'
 import { useActiveHeading } from '../hooks/useActiveHeading'
+import { toImportJson } from '../utils/importJson'
+
+type CopyStatus = 'idle' | 'copied' | 'failed'
+
+const COPY_LABELS: Record<CopyStatus, string> = {
+  idle: 'Copier JSON',
+  copied: 'Copié',
+  failed: 'Échec de la copie',
+}
 
 export default function FlashCardDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [confirming, setConfirming] = useState(false)
+  const [replaceOpen, setReplaceOpen] = useState(false)
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
+  const copyTimerRef = useRef<number | undefined>(undefined)
 
   const { data: card, isLoading, isError } = useQuery({
     queryKey: ['flashcards', id],
@@ -43,6 +56,10 @@ export default function FlashCardDetailPage() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [drawerOpen])
 
+  useEffect(() => {
+    return () => window.clearTimeout(copyTimerRef.current)
+  }, [])
+
   const deleteMutation = useMutation({
     mutationFn: () => deleteFlashCard(id!),
     onSuccess: () => {
@@ -59,6 +76,19 @@ export default function FlashCardDetailPage() {
     document.title = card.title
     window.print()
     document.title = previousTitle
+  }
+
+  async function handleCopyJson() {
+    if (!card) return
+    let ok = true
+    try {
+      await navigator.clipboard.writeText(toImportJson(card))
+    } catch {
+      ok = false
+    }
+    setCopyStatus(ok ? 'copied' : 'failed')
+    window.clearTimeout(copyTimerRef.current)
+    copyTimerRef.current = window.setTimeout(() => setCopyStatus('idle'), 2000)
   }
 
   function navigateTo(headingId: string) {
@@ -104,6 +134,22 @@ export default function FlashCardDetailPage() {
         </Link>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={handleCopyJson}
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
+          >
+            <CopyIcon />
+            {COPY_LABELS[copyStatus]}
+          </button>
+
+          <button
+            onClick={() => setReplaceOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
+          >
+            <UploadIcon color="currentColor" />
+            Remplacer
+          </button>
+
           <button
             onClick={handleExportPdf}
             className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
@@ -230,6 +276,8 @@ export default function FlashCardDetailPage() {
           </div>
         </>
       )}
+
+      <ReplaceModal open={replaceOpen} onClose={() => setReplaceOpen(false)} card={card} />
     </div>
   )
 }

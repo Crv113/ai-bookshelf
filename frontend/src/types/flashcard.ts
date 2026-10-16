@@ -27,3 +27,12 @@ export interface FlashCardCreatePayload {
   estimatedTime: number
   categoryId: string
 }
+
+export interface FlashCardUpdatePayload {
+  title: string
+  summary: string
+  content: string
+  model: string
+  estimatedTime: number
+  categoryId: string
+}
