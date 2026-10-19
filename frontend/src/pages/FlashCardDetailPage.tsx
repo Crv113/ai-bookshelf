@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchFlashCard, deleteFlashCard } from '../api/flashcards'
 import MarkdownRenderer from '../components/MarkdownRenderer'
 import TableOfContents from '../components/TableOfContents'
 import ReplaceModal from '../components/ReplaceModal'
+import SectionEditor from '../components/SectionEditor'
+import { useUpdateFlashCard } from '../hooks/useUpdateFlashCard'
+import { applySectionEdit, getEditableText, splitSections } from '../utils/markdownSections'
+import type { MarkdownSection } from '../utils/markdownSections'
 import { ChevronIcon, CloseIcon, CopyIcon, ListIcon, UploadIcon } from '../components/icons/icons'
 import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 import { useTocHeadings } from '../hooks/useTocHeadings'
@@ -17,6 +21,21 @@ const COPY_LABELS: Record<CopyStatus, string> = {
   idle: 'Copier JSON',
   copied: 'Copié',
   failed: 'Échec de la copie',
+}
+
+const MISSING_META_ERROR = "Impossible d'enregistrer : le modèle et la durée estimée doivent être renseignés (utilisez « Remplacer par un JSON »)."
+const EMPTY_CONTENT_ERROR = 'La fiche ne peut pas être vide.'
+const DISCARD_CONFIRM = 'Abandonner les modifications non enregistrées de cette section ?'
+
+interface EditingState {
+  cardId: string
+  index: number
+  baseContent: string
+}
+
+function editorRegionLabel(section: MarkdownSection): string {
+  if (section.kind === 'intro') return "Édition de l'introduction"
+  return `Édition de la section « ${section.headingText || 'sans titre'} »`
 }
 
 export default function FlashCardDetailPage() {
@@ -42,10 +61,48 @@ export default function FlashCardDetailPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const hasToc = items.length >= 2
 
+  const [editing, setEditing] = useState<EditingState | null>(null)
+  const [dirty, setDirty] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [restoreIndex, setRestoreIndex] = useState<number | null>(null)
+  const savingRef = useRef(false)
+  const updateMutation = useUpdateFlashCard({ id: id ?? '', categoryId: card?.categoryId ?? '' })
+  const sections = useMemo(() => splitSections(card?.content ?? ''), [card?.content])
+  const currentEditing = editing && card && editing.cardId === card.id && editing.baseContent === card.content ? editing : null
+  const hasUnsavedDraft = currentEditing !== null && dirty
+
   useEffect(() => {
     setDrawerOpen(false)
     setActiveId(null)
+    setEditing(null)
+    setDirty(false)
+    setSaveError(null)
   }, [id, setActiveId])
+
+  useEffect(() => {
+    if (!hasUnsavedDraft) return
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [hasUnsavedDraft])
+
+  useLayoutEffect(() => {
+    if (restoreIndex === null) return
+    if (sections.length === 0) {
+      setRestoreIndex(null)
+      return
+    }
+    const target = Math.min(restoreIndex, sections.length - 1)
+    const el = contentRef.current?.querySelector<HTMLElement>(`[data-section-index="${target}"]`)
+    if (el && el.getBoundingClientRect().top < 0) {
+      el.scrollIntoView({ block: 'start', behavior: 'instant' })
+    }
+    el?.querySelector<HTMLElement>('[data-section-edit]')?.focus({ preventScroll: true })
+    setRestoreIndex(null)
+  }, [restoreIndex, sections.length])
 
   useEffect(() => {
     if (!drawerOpen) return
@@ -68,6 +125,54 @@ export default function FlashCardDetailPage() {
       navigate('/')
     },
   })
+
+  function handleEditSection(index: number) {
+    if (!card || updateMutation.isPending || currentEditing?.index === index) return
+    if (hasUnsavedDraft && !window.confirm(DISCARD_CONFIRM)) return
+    setSaveError(null)
+    setDirty(false)
+    setEditing({ cardId: card.id, index, baseContent: card.content })
+  }
+
+  function closeEditor(index: number) {
+    setEditing(null)
+    setDirty(false)
+    setSaveError(null)
+    setRestoreIndex(index)
+  }
+
+  function handleCancel() {
+    if (!currentEditing) return
+    if (dirty && !window.confirm(DISCARD_CONFIRM)) return
+    closeEditor(currentEditing.index)
+  }
+
+  function handleSave(draft: string) {
+    if (savingRef.current || !card || !currentEditing) return
+    setSaveError(null)
+    const { model, estimatedTime } = card
+    if (!model?.trim() || estimatedTime === null || estimatedTime <= 0) {
+      setSaveError(MISSING_META_ERROR)
+      return
+    }
+    const { index, baseContent } = currentEditing
+    const content = applySectionEdit(baseContent, index, draft)
+    if (!content.trim()) {
+      setSaveError(EMPTY_CONTENT_ERROR)
+      return
+    }
+    savingRef.current = true
+    updateMutation.mutate(
+      { title: card.title, summary: card.summary, model, estimatedTime, categoryId: card.categoryId, content },
+      {
+        onSuccess: () => closeEditor(index),
+        onError: (err) => setSaveError(err.message),
+        onSettled: () => {
+          savingRef.current = false
+        },
+      },
+    )
+  }
 
   // Le titre du document sert de nom de fichier par défaut dans « Enregistrer en PDF »
   function handleExportPdf() {
@@ -144,7 +249,9 @@ export default function FlashCardDetailPage() {
 
           <button
             onClick={() => setReplaceOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
+            disabled={currentEditing !== null}
+            title={currentEditing !== null ? "Terminez l'édition de la section en cours" : undefined}
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <UploadIcon color="currentColor" />
             Remplacer
@@ -212,7 +319,25 @@ export default function FlashCardDetailPage() {
 
           <div className="rounded-none lg:rounded-2xl p-0 lg:p-8 max-w-4xl overflow-hidden -mx-4 lg:mx-0 bg-card print:bg-transparent print:p-0 print:mx-0 print:max-w-none print:overflow-visible">
             <div ref={contentRef}>
-              <MarkdownRenderer content={card.content} />
+              <MarkdownRenderer
+                content={card.content}
+                sectionEditing={{
+                  sections,
+                  editingIndex: currentEditing?.index ?? null,
+                  onEdit: handleEditSection,
+                  editor: currentEditing ? (
+                    <SectionEditor
+                      regionLabel={editorRegionLabel(sections[currentEditing.index])}
+                      initialText={getEditableText(sections[currentEditing.index])}
+                      saving={updateMutation.isPending}
+                      error={saveError}
+                      onDirtyChange={setDirty}
+                      onCancel={handleCancel}
+                      onSave={handleSave}
+                    />
+                  ) : null,
+                }}
+              />
             </div>
           </div>
         </div>
