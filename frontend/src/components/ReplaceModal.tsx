@@ -1,7 +1,6 @@
 import { useId, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateFlashCard } from '../api/flashcards'
-import type { FlashCardResponse, FlashCardUpdatePayload } from '../types/flashcard'
+import { useUpdateFlashCard } from '../hooks/useUpdateFlashCard'
+import type { FlashCardResponse } from '../types/flashcard'
 import { parseImportJson } from '../utils/importJson'
 
 interface ReplaceModalProps {
@@ -13,7 +12,6 @@ interface ReplaceModalProps {
 export default function ReplaceModal({ open, onClose, card }: ReplaceModalProps) {
   const [json, setJson] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const queryClient = useQueryClient()
   const titleId = useId()
 
   function reset() {
@@ -21,19 +19,7 @@ export default function ReplaceModal({ open, onClose, card }: ReplaceModalProps)
     setError(null)
   }
 
-  const mutation = useMutation({
-    mutationFn: (payload: FlashCardUpdatePayload) => updateFlashCard(card.id, payload),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(['flashcards', card.id], updated)
-      queryClient.invalidateQueries({ queryKey: ['flashcards'], exact: true })
-      queryClient.invalidateQueries({ queryKey: ['flashcards', 'category', card.categoryId] })
-      reset()
-      onClose()
-    },
-    onError: (err: Error) => {
-      setError(err.message)
-    },
-  })
+  const mutation = useUpdateFlashCard(card)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,7 +29,16 @@ export default function ReplaceModal({ open, onClose, card }: ReplaceModalProps)
       return
     }
     setError(null)
-    mutation.mutate({ ...result.data, categoryId: card.categoryId })
+    mutation.mutate(
+      { ...result.data, categoryId: card.categoryId },
+      {
+        onSuccess: () => {
+          reset()
+          onClose()
+        },
+        onError: (err) => setError(err.message),
+      },
+    )
   }
 
   function handleClose() {
