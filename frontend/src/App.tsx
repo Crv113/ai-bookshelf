@@ -6,6 +6,7 @@ import FlashCardDetailPage from './pages/FlashCardDetailPage'
 import CategoryFlashCardsPage from './pages/CategoryFlashCardsPage'
 import ImportModal from './components/ImportModal'
 import {LibraryIcon} from './components/icons/icons'
+import { DevBadge, IS_DEV, devWatermarkStyle } from './components/DevIndicator'
 
 function PanelLeftIcon() {
   return (
@@ -56,7 +57,10 @@ export default function App() {
       />
 
       {/* Pas d'overflow ici : il casserait position:sticky des descendants (la page défile sur window) */}
-      <main className="flex-1 min-w-0 pt-14 lg:pt-0 bg-page print:pt-0 print:overflow-visible print:bg-white">
+      <main
+        className="flex-1 min-w-0 pt-14 lg:pt-0 bg-page print:pt-0 print:overflow-visible print:bg-white print:bg-none"
+        style={IS_DEV ? devWatermarkStyle : undefined}
+      >
         <Routes>
           <Route path="/" element={<FlashCardListPage onImport={() => setImportOpen(true)} />} />
           <Route path="/flashcards/:id" element={<FlashCardDetailPage />} />
@@ -65,6 +69,7 @@ export default function App() {
       </main>
 
       <ImportModal open={importOpen} onClose={() => setImportOpen(false)} />
+      <DevBadge />
     </div>
   )
 }

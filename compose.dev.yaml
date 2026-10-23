@@ -1,0 +1,24 @@
+# Base de développement, démarrée automatiquement par Spring Boot (spring-boot-docker-compose) lors de `make dev`.
+# Projet et volume distincts de l'application complète : les deux peuvent tourner en même temps.
+# Au premier `make dev`, elle est remplie avec une copie de la base de l'application (voir `make dev-restore`).
+name: ai-bookshelf-dev
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: aibookshelf
+      POSTGRES_USER: aibookshelf
+      POSTGRES_PASSWORD: aibookshelf
+    volumes:
+      - db-data:/var/lib/postgresql
+    ports:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aibookshelf -d aibookshelf"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  db-data:
