@@ -34,3 +34,7 @@ build/
 
 ai-agents
 claude.md
+
+# Sauvegardes de la base et configuration locale
+backups/
+.env
