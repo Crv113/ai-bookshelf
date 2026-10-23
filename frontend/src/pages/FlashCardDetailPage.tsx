@@ -9,16 +9,29 @@ import SectionEditor from '../components/SectionEditor'
 import { useUpdateFlashCard } from '../hooks/useUpdateFlashCard'
 import { applySectionEdit, getEditableText, splitSections } from '../utils/markdownSections'
 import type { MarkdownSection } from '../utils/markdownSections'
-import { ChevronIcon, CloseIcon, CopyIcon, ListIcon, UploadIcon } from '../components/icons/icons'
+import { ChevronIcon, CloseIcon, CopyIcon, ListIcon, QuizIcon, UploadIcon } from '../components/icons/icons'
 import { formatFlashCardMeta } from '../utils/formatFlashCardMeta'
 import { useTocHeadings } from '../hooks/useTocHeadings'
 import { useActiveHeading } from '../hooks/useActiveHeading'
 import { toImportJson } from '../utils/importJson'
+import { buildQuizPrompt } from '../constants/quizPrompt'
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard'
+import type { CopyStatus } from '../hooks/useCopyToClipboard'
 
-type CopyStatus = 'idle' | 'copied' | 'failed'
-
-const COPY_LABELS: Record<CopyStatus, string> = {
+const COPY_JSON_LABELS: Record<CopyStatus, string> = {
   idle: 'Copier JSON',
+  copied: 'Copié',
+  failed: 'Échec de la copie',
+}
+
+const COPY_MCQ_QUIZ_LABELS: Record<CopyStatus, string> = {
+  idle: 'Quiz QCM',
+  copied: 'Copié',
+  failed: 'Échec de la copie',
+}
+
+const COPY_OPEN_QUIZ_LABELS: Record<CopyStatus, string> = {
+  idle: 'Quiz libre',
   copied: 'Copié',
   failed: 'Échec de la copie',
 }
@@ -44,8 +57,9 @@ export default function FlashCardDetailPage() {
   const queryClient = useQueryClient()
   const [confirming, setConfirming] = useState(false)
   const [replaceOpen, setReplaceOpen] = useState(false)
-  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle')
-  const copyTimerRef = useRef<number | undefined>(undefined)
+  const [copyJsonStatus, copyJson] = useCopyToClipboard()
+  const [copyMcqQuizStatus, copyMcqQuiz] = useCopyToClipboard()
+  const [copyOpenQuizStatus, copyOpenQuiz] = useCopyToClipboard()
 
   const { data: card, isLoading, isError } = useQuery({
     queryKey: ['flashcards', id],
@@ -113,10 +127,6 @@ export default function FlashCardDetailPage() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [drawerOpen])
 
-  useEffect(() => {
-    return () => window.clearTimeout(copyTimerRef.current)
-  }, [])
-
   const deleteMutation = useMutation({
     mutationFn: () => deleteFlashCard(id!),
     onSuccess: () => {
@@ -183,17 +193,16 @@ export default function FlashCardDetailPage() {
     document.title = previousTitle
   }
 
-  async function handleCopyJson() {
-    if (!card) return
-    let ok = true
-    try {
-      await navigator.clipboard.writeText(toImportJson(card))
-    } catch {
-      ok = false
-    }
-    setCopyStatus(ok ? 'copied' : 'failed')
-    window.clearTimeout(copyTimerRef.current)
-    copyTimerRef.current = window.setTimeout(() => setCopyStatus('idle'), 2000)
+  function handleCopyJson() {
+    if (card) copyJson(toImportJson(card))
+  }
+
+  function handleCopyMcqQuizPrompt() {
+    if (card) copyMcqQuiz(buildQuizPrompt(card, 'mcq'))
+  }
+
+  function handleCopyOpenQuizPrompt() {
+    if (card) copyOpenQuiz(buildQuizPrompt(card, 'open'))
   }
 
   function navigateTo(headingId: string) {
@@ -244,7 +253,25 @@ export default function FlashCardDetailPage() {
             className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
           >
             <CopyIcon />
-            {COPY_LABELS[copyStatus]}
+            {COPY_JSON_LABELS[copyJsonStatus]}
+          </button>
+
+          <button
+            onClick={handleCopyMcqQuizPrompt}
+            title="Copier un prompt pour qu'une IA me fasse passer un QCM de 30 questions sur cette fiche"
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
+          >
+            <QuizIcon />
+            {COPY_MCQ_QUIZ_LABELS[copyMcqQuizStatus]}
+          </button>
+
+          <button
+            onClick={handleCopyOpenQuizPrompt}
+            title="Copier un prompt pour qu'une IA me pose 30 questions ouvertes sur cette fiche, sans choix de réponses"
+            className="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-700 transition-colors hover:cursor-pointer"
+          >
+            <QuizIcon />
+            {COPY_OPEN_QUIZ_LABELS[copyOpenQuizStatus]}
           </button>
 
           <button

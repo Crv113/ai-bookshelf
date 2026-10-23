@@ -6,6 +6,7 @@ import { MemoryRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import FlashCardDetailPage from './FlashCardDetailPage'
 import { fetchFlashCard, updateFlashCard } from '../api/flashcards'
+import { buildQuizPrompt } from '../constants/quizPrompt'
 import type { FlashCardResponse } from '../types/flashcard'
 
 vi.mock('../api/flashcards', () => ({
@@ -206,6 +207,41 @@ describe('FlashCardDetailPage copy JSON', () => {
     })
 
     expect(screen.getByRole('button', { name: 'Échec de la copie' })).toBeInTheDocument()
+  })
+})
+
+describe('FlashCardDetailPage copy quiz prompt', () => {
+  beforeEach(() => {
+    vi.mocked(fetchFlashCard).mockReset()
+  })
+
+  afterEach(() => {
+    if (originalClipboard) {
+      Object.defineProperty(navigator, 'clipboard', originalClipboard)
+    } else {
+      setClipboard(undefined)
+    }
+  })
+
+  it.each([
+    { label: 'Quiz QCM', mode: 'mcq' as const, other: 'Quiz libre' },
+    { label: 'Quiz libre', mode: 'open' as const, other: 'Quiz QCM' },
+  ])('copies the $mode quiz prompt from the « $label » button only', async ({ label, mode, other }) => {
+    const card = buildFullCard()
+    vi.mocked(fetchFlashCard).mockResolvedValue(card)
+    renderPage()
+    const button = await screen.findByRole('button', { name: label })
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    setClipboard({ writeText })
+
+    await act(async () => {
+      fireEvent.click(button)
+    })
+
+    expect(writeText).toHaveBeenCalledWith(buildQuizPrompt(card, mode))
+    expect(screen.getByRole('button', { name: 'Copié' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: other })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copier JSON' })).toBeInTheDocument()
   })
 })
 
